@@ -1,19 +1,26 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react';
+import { AppLoading, Font } from 'expo';
+import Routes from './screens/Routes';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
-  );
+class App extends Component {
+  state = {
+    isFontLoaded: false,
+  };
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      dogbyte: require('./assets/fonts/dogbyte.otf'),
+    });
+    this.setState({ isFontLoaded: true });
+  }
+
+  render() {
+    if (!this.state.isFontLoaded) {
+      return <AppLoading />;
+    } else {
+      return <Routes />;
+    }
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
