@@ -18,4 +18,26 @@ export default StyleSheet.create({
     width: 60,
     marginRight: 15,
   },
+  hiscore: {
+    fontSize: 28.5,
+    fontFamily: 'dogbyte',
+    color: '#ecf0f1',
+    marginTop: 5,
+  },
+  trophyIcon: {
+    height: 45,
+    width: 45,
+    marginRight: 12.5,
+  },
+  leaderboard: {
+    fontSize: 38,
+    fontFamily: 'dogbyte',
+    color: '#ecf0f1',
+    marginTop: 5,
+  },
+  leaderboardIcon: {
+    height: 50,
+    width: 50,
+    marginRight: 12.5,
+  },
 });

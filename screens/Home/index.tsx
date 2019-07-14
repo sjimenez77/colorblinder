@@ -8,6 +8,10 @@ export default class Home extends Component {
     console.log('onPlayPress event handler');
   };
 
+  onLeaderboardPress = () => {
+    console.log('onLeaderboardPress event handler');
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -21,6 +25,23 @@ export default class Home extends Component {
             style={styles.playIcon}
           />
           <Text style={styles.play}>PLAY!</Text>
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image
+            source={require('../../assets/icons/trophy.png')}
+            style={styles.trophyIcon}
+          />
+          <Text style={styles.hiscore}>Hi-score: 0</Text>
+        </View>
+        <TouchableOpacity
+          onPress={this.onLeaderboardPress}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Image
+            source={require('../../assets/icons/leaderboard.png')}
+            style={styles.leaderboardIcon}
+          />
+          <Text style={styles.leaderboard}>Leaderboard</Text>
         </TouchableOpacity>
       </View>
     );
