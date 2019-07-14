@@ -40,4 +40,20 @@ export default StyleSheet.create({
     width: 50,
     marginRight: 12.5,
   },
+  bottomContainer: {
+    position: 'absolute',
+    left: 15,
+    right: 15,
+    bottom: 12.5, // the 2.5px bottom margin from the text is subtracted from the 15px spacing
+    flexDirection: 'row',
+  },
+  copyrightText: {
+    fontSize: 16,
+    fontFamily: 'dogbyte',
+    marginBottom: 2.5,
+  },
+  soundIcon: {
+    height: 35,
+    width: 35,
+  },
 });
