@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationInjectedProps } from 'react-navigation';
 import { Header } from '../../components';
 import styles from './styles';
 
-export default class Home extends Component {
+export default class Home extends Component<NavigationInjectedProps> {
   state = {
     isSoundOn: true,
   };
 
   onPlayPress = () => {
-    console.log('onPlayPress event handler');
+    this.props.navigation.navigate('Game');
   };
 
   onLeaderboardPress = () => {
