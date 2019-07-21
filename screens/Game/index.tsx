@@ -8,8 +8,8 @@ interface GameState {
   points: number;
   timeLeft: number;
   size: number;
-  diffTileIndex?: number[];
-  diffTileColor?: string;
+  diffTileIndex: number[];
+  diffTileColor: string;
   rgb: { r: number; g: number; b: number };
 }
 
@@ -20,6 +20,8 @@ export default class Game extends Component<{}, GameState> {
     timeLeft: 15,
     rgb: generateRGB(),
     size: 2,
+    diffTileColor: '',
+    diffTileIndex: [],
   };
 
   componentWillMount() {
@@ -53,6 +55,19 @@ export default class Game extends Component<{}, GameState> {
       diffTileColor: `rgb(${mRGB.r}, ${mRGB.g}, ${mRGB.b})`,
       rgb: RGB,
     });
+  };
+
+  onTilePress = (rowIndex, columnIndex) => {
+    const { diffTileIndex, points, timeLeft } = this.state;
+    if (rowIndex == diffTileIndex[0] && columnIndex == diffTileIndex[1]) {
+      // good tile
+      this.setState({ points: points + 1, timeLeft: timeLeft + 2 });
+      this.generateNewRound();
+    } else {
+      // wrong tile
+      this.setState({ timeLeft: timeLeft - 2 });
+    }
+    console.log(this.state);
   };
 
   render() {
@@ -92,7 +107,7 @@ export default class Game extends Component<{}, GameState> {
                             : `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
                         margin: 2,
                       }}
-                      onPress={() => console.log(rowIndex, columnIndex)}
+                      onPress={() => this.onTilePress(rowIndex, columnIndex)}
                     />
                   ))}
               </View>
