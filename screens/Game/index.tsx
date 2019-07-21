@@ -1,15 +1,15 @@
-import React, { Component, ReactText } from 'react';
-import { View, Dimensions, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react';
+import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { Header } from '../../components';
-import styles from './styles';
 import { generateRGB, mutateRGB } from '../../utilities';
+import styles from './styles';
 
 interface GameState {
   points: number;
   timeLeft: number;
   size: number;
-  diffTileIndex: number[];
-  diffTileColor: string;
+  diffTileIndex?: number[];
+  diffTileColor?: string;
   rgb: { r: number; g: number; b: number };
 }
 
@@ -19,12 +19,11 @@ export default class Game extends Component<{}, GameState> {
     points: 0,
     timeLeft: 15,
     rgb: generateRGB(),
-    diffTileIndex: [],
-    diffTileColor: '',
     size: 2,
   };
 
   componentWillMount() {
+    this.generateNewRound();
     this.interval = setInterval(() => {
       this.setState(state => ({
         timeLeft: state.timeLeft - 1,
@@ -71,7 +70,7 @@ export default class Game extends Component<{}, GameState> {
         >
           {Array(size)
             .fill(null)
-            .map((_val: any, columnIndex: ReactText) => (
+            .map((_val: any, columnIndex: number) => (
               <View
                 style={{
                   flex: 1,
@@ -81,7 +80,7 @@ export default class Game extends Component<{}, GameState> {
               >
                 {Array(size)
                   .fill(null)
-                  .map((_val: any, rowIndex: ReactText) => (
+                  .map((_val: any, rowIndex: number) => (
                     <TouchableOpacity
                       key={`${rowIndex}.${columnIndex}`}
                       style={{
