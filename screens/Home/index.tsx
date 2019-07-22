@@ -45,9 +45,18 @@ export default class Home extends Component<NavigationInjectedProps> {
   };
 
   onToggleSound = () => {
-    this.setState({
-      isSoundOn: !this.state.isSoundOn,
-    });
+    this.setState(
+      {
+        isSoundOn: !this.state.isSoundOn,
+      },
+      () => {
+        if (this.state.isSoundOn) {
+          this.backgroundMusic.playAsync();
+        } else {
+          this.backgroundMusic.stopAsync();
+        }
+      },
+    );
   };
 
   render() {
