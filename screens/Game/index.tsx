@@ -1,16 +1,18 @@
+import { Audio } from 'expo-av';
 import React, { Component, Fragment } from 'react';
 import {
   Dimensions,
-  TouchableOpacity,
-  View,
-  Text,
   Image,
   SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
 } from 'react-native';
-import { Header } from '../../components';
-import { generateRGB, mutateRGB } from '../../utilities';
-import styles from './styles';
 import { NavigationInjectedProps } from 'react-navigation';
+import { Header } from '../../components';
+import { generateRGB, mutateRGB, shakeAnimation } from '../../utilities';
+import styles from './styles';
 
 interface GameState {
   points: number;
@@ -20,6 +22,7 @@ interface GameState {
   diffTileColor: string;
   rgb: { r: number; g: number; b: number };
   gameState: string;
+  shakeVal: Animated.Value;
 }
 
 export default class Game extends Component<
@@ -27,6 +30,14 @@ export default class Game extends Component<
   GameState
 > {
   interval: number;
+  backgroundMusic: Audio.Sound;
+  buttonFX: Audio.Sound;
+  tileCorrectFX: Audio.Sound;
+  tileWrongFX: Audio.Sound;
+  pauseInFX: Audio.Sound;
+  pauseOutFX: Audio.Sound;
+  loseFX: Audio.Sound;
+
   state = {
     points: 0,
     timeLeft: 15,
@@ -35,13 +46,16 @@ export default class Game extends Component<
     diffTileColor: '',
     diffTileIndex: [],
     gameState: 'INGAME', // three possible states: 'INGAME', 'PAUSED' and 'LOST'
+    shakeVal: new Animated.Value(0),
   };
 
-  componentWillMount() {
+  async componentWillMount() {
     this.generateNewRound();
     this.interval = setInterval(() => {
       if (this.state.gameState === 'INGAME') {
         if (this.state.timeLeft <= 0) {
+          this.loseFX.replayAsync();
+          this.backgroundMusic.stopAsync();
           this.setState({ gameState: 'LOST' });
         } else {
           this.setState({
@@ -50,6 +64,37 @@ export default class Game extends Component<
         }
       }
     }, 1000);
+
+    this.backgroundMusic = new Audio.Sound();
+    this.buttonFX = new Audio.Sound();
+    this.tileCorrectFX = new Audio.Sound();
+    this.tileWrongFX = new Audio.Sound();
+    this.pauseInFX = new Audio.Sound();
+    this.pauseOutFX = new Audio.Sound();
+    this.loseFX = new Audio.Sound();
+
+    try {
+      await this.backgroundMusic.loadAsync(
+        require('../../assets/music/Komiku_BattleOfPogs.mp3'),
+      );
+      await this.buttonFX.loadAsync(require('../../assets/sfx/button.wav'));
+      await this.tileCorrectFX.loadAsync(
+        require('../../assets/sfx/tile_tap.wav'),
+      );
+      await this.tileWrongFX.loadAsync(
+        require('../../assets/sfx/tile_wrong.wav'),
+      );
+      await this.pauseInFX.loadAsync(require('../../assets/sfx/pause_in.wav'));
+      await this.pauseOutFX.loadAsync(
+        require('../../assets/sfx/pause_out.wav'),
+      );
+      await this.loseFX.loadAsync(require('../../assets/sfx/lose.wav'));
+      await this.backgroundMusic.setIsLoopingAsync(true);
+      await this.backgroundMusic.playAsync();
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
   }
 
   componentWillUnmount() {
@@ -76,10 +121,11 @@ export default class Game extends Component<
     });
   };
 
-  onTilePress = (rowIndex, columnIndex) => {
-    const { diffTileIndex, points, timeLeft } = this.state;
+  onTilePress = (rowIndex: number, columnIndex: number) => {
+    const { diffTileIndex, points, timeLeft, shakeVal } = this.state;
     if (rowIndex == diffTileIndex[0] && columnIndex == diffTileIndex[1]) {
       // good tile
+      this.tileCorrectFX.replayAsync();
       this.setState({
         points: points + 1,
         timeLeft: timeLeft + 2,
@@ -87,22 +133,26 @@ export default class Game extends Component<
       this.generateNewRound();
     } else {
       // wrong tile
+      shakeAnimation(shakeVal);
+      this.tileWrongFX.replayAsync();
       this.setState({ timeLeft: timeLeft - 2 });
     }
-    console.log(this.state);
   };
 
   onBottomBarPress = async () => {
     switch (this.state.gameState) {
       case 'INGAME': {
+        this.pauseInFX.replayAsync();
         this.setState({ gameState: 'PAUSED' });
         break;
       }
       case 'PAUSED': {
+        this.pauseOutFX.replayAsync();
         this.setState({ gameState: 'INGAME' });
         break;
       }
       case 'LOST': {
+        this.backgroundMusic.replayAsync();
         await this.setState({
           points: 0,
           timeLeft: 15,
@@ -118,12 +168,21 @@ export default class Game extends Component<
   };
 
   onExitPress = () => {
+    this.buttonFX.replayAsync();
+    this.backgroundMusic.stopAsync();
     this.props.navigation.goBack();
   };
 
   render() {
-    const { rgb, size, diffTileIndex, diffTileColor, gameState } = this.state;
-    const { width } = Dimensions.get('window');
+    const {
+      rgb,
+      size,
+      diffTileIndex,
+      diffTileColor,
+      gameState,
+      shakeVal,
+    } = this.state;
+    const { height } = Dimensions.get('window');
     const bottomIcon =
       gameState === 'INGAME'
         ? require('../../assets/icons/pause.png')
@@ -146,10 +205,15 @@ export default class Game extends Component<
             justifyContent: 'center',
           }}
         >
-          <View
+          <Animated.View
             style={{
-              height: width * 0.875,
-              width: width * 0.875,
+              height: height / 2.5,
+              width: height / 2.5,
+              transform: [
+                {
+                  translateX: shakeVal,
+                },
+              ],
               flexDirection: 'row',
             }}
           >
@@ -212,7 +276,7 @@ export default class Game extends Component<
                 </TouchableOpacity>
               </View>
             )}
-          </View>
+          </Animated.View>
         </View>
         <View style={{ flex: 2 }}>
           <View style={styles.bottomContainer}>

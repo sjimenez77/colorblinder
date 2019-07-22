@@ -1,3 +1,4 @@
+import { Audio } from 'expo-av';
 import React, { Component } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationInjectedProps } from 'react-navigation';
@@ -5,11 +6,31 @@ import { Header } from '../../components';
 import styles from './styles';
 
 export default class Home extends Component<NavigationInjectedProps> {
+  backgroundMusic: Audio.Sound;
+  buttonFX: Audio.Sound;
   state = {
     isSoundOn: true,
   };
 
+  async componentWillMount() {
+    this.backgroundMusic = new Audio.Sound();
+    this.buttonFX = new Audio.Sound();
+    try {
+      await this.backgroundMusic.loadAsync(
+        require('../../assets/music/Komiku_Mushrooms.mp3'),
+      );
+      await this.buttonFX.loadAsync(require('../../assets/sfx/button.wav'));
+      await this.backgroundMusic.setIsLoopingAsync(true);
+      await this.backgroundMusic.playAsync();
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
+  }
+
   onPlayPress = () => {
+    this.buttonFX.replayAsync();
+    this.backgroundMusic.stopAsync();
     this.props.navigation.navigate('Game');
   };
 
