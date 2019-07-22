@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationInjectedProps } from 'react-navigation';
 import { Header } from '../../components';
+import { retrieveData } from '../../utilities';
 import styles from './styles';
 
 export default class Home extends Component<NavigationInjectedProps> {
@@ -10,9 +11,14 @@ export default class Home extends Component<NavigationInjectedProps> {
   buttonFX: Audio.Sound;
   state = {
     isSoundOn: true,
+    bestPoints: 0,
   };
 
   async componentWillMount() {
+    retrieveData('highScore').then(val => {
+      return this.setState({ bestPoints: parseInt(val, 10) || 0 });
+    });
+
     this.backgroundMusic = new Audio.Sound();
     this.buttonFX = new Audio.Sound();
     try {
@@ -77,7 +83,7 @@ export default class Home extends Component<NavigationInjectedProps> {
             source={require('../../assets/icons/trophy.png')}
             style={styles.trophyIcon}
           />
-          <Text style={styles.hiscore}>Hi-score: 0</Text>
+          <Text style={styles.hiscore}>Hi-score: {this.state.bestPoints}</Text>
         </View>
         <TouchableOpacity
           onPress={this.onLeaderboardPress}

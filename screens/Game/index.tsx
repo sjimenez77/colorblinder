@@ -11,12 +11,20 @@ import {
 } from 'react-native';
 import { NavigationInjectedProps } from 'react-navigation';
 import { Header } from '../../components';
-import { generateRGB, mutateRGB, shakeAnimation } from '../../utilities';
+import {
+  generateRGB,
+  mutateRGB,
+  shakeAnimation,
+  storeData,
+  retrieveData,
+} from '../../utilities';
 import styles from './styles';
 
 interface GameState {
   points: number;
+  bestPoints: number;
   timeLeft: number;
+  bestTime: number;
   size: number;
   diffTileIndex: number[];
   diffTileColor: string;
@@ -40,7 +48,9 @@ export default class Game extends Component<
 
   state = {
     points: 0,
+    bestPoints: 0,
     timeLeft: 15,
+    bestTime: 0,
     rgb: generateRGB(),
     size: 2,
     diffTileColor: '',
@@ -50,12 +60,28 @@ export default class Game extends Component<
   };
 
   async componentWillMount() {
+    retrieveData('highScore').then(val => {
+      return this.setState({ bestPoints: parseInt(val, 10) || 0 });
+    });
+    retrieveData('bestTime').then(val =>
+      this.setState({ bestTime: parseInt(val, 10) || 0 }),
+    );
     this.generateNewRound();
     this.interval = setInterval(() => {
       if (this.state.gameState === 'INGAME') {
+        if (this.state.timeLeft > this.state.bestTime) {
+          this.setState(state => ({ bestTime: state.timeLeft }));
+          storeData('bestTime', this.state.timeLeft);
+        }
+
         if (this.state.timeLeft <= 0) {
           this.loseFX.replayAsync();
           this.backgroundMusic.stopAsync();
+          // Store best points
+          if (this.state.points > this.state.bestPoints) {
+            this.setState(state => ({ bestPoints: state.points }));
+            storeData('highScore', this.state.points);
+          }
           this.setState({ gameState: 'LOST' });
         } else {
           this.setState({
@@ -65,6 +91,7 @@ export default class Game extends Component<
       }
     }, 1000);
 
+    // Initialize sounds
     this.backgroundMusic = new Audio.Sound();
     this.buttonFX = new Audio.Sound();
     this.tileCorrectFX = new Audio.Sound();
@@ -288,7 +315,7 @@ export default class Game extends Component<
                   source={require('../../assets/icons/trophy.png')}
                   style={styles.bestIcon}
                 />
-                <Text style={styles.bestLabel}>0</Text>
+                <Text style={styles.bestLabel}>{this.state.bestPoints}</Text>
               </View>
             </View>
             <View style={styles.bottomSectionContainer}>
@@ -307,7 +334,7 @@ export default class Game extends Component<
                   source={require('../../assets/icons/clock.png')}
                   style={styles.bestIcon}
                 />
-                <Text style={styles.bestLabel}>0</Text>
+                <Text style={styles.bestLabel}>{this.state.bestTime}</Text>
               </View>
             </View>
           </View>
