@@ -24,4 +24,4 @@ More info at https://facebook.github.io/react-native/docs/getting-started and ht
 
 ## Running the application
 
-Run in your terminal `npm start`.
+Run in your terminal `npm start` and choose the local device or simulator to run the application.
