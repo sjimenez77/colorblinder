@@ -45,4 +45,29 @@ export default StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 'auto',
   },
+  pausedContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pausedText: {
+    fontFamily: 'dogbyte',
+    textAlign: 'center',
+    color: '#eee',
+    marginTop: 20,
+    fontSize: 60,
+  },
+  pausedIcon: {
+    width: 80,
+    height: 80,
+  },
+  bottomIcon: {
+    width: 80,
+    height: 80,
+  },
+  exitIcon: {
+    marginTop: 20,
+    width: 160,
+    height: 80,
+  },
 });
