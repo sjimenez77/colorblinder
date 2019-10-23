@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ColorBlinder",
-    "slug": "colorblinder",
+    "slug": "color-blinder",
     "privacy": "public",
     "sdkVersion": "33.0.0",
     "platforms": [
@@ -25,6 +25,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "React Native game developed using Expo and TypeScript.\n\nBased on the tutorial series https://blog.risingstack.com/a-definitive-react-native-guide-for-react-developers/",
+    "githubUrl": "https://github.com/sjimenez77/colorblinder"
   }
 }
