@@ -60,17 +60,17 @@ export default class Game extends Component<
   };
 
   async componentWillMount() {
-    retrieveData('highScore').then(val => {
+    retrieveData('highScore').then((val) => {
       return this.setState({ bestPoints: parseInt(val, 10) || 0 });
     });
-    retrieveData('bestTime').then(val =>
+    retrieveData('bestTime').then((val) =>
       this.setState({ bestTime: parseInt(val, 10) || 0 }),
     );
     this.generateNewRound();
     this.interval = setInterval(() => {
       if (this.state.gameState === 'INGAME') {
         if (this.state.timeLeft > this.state.bestTime) {
-          this.setState(state => ({ bestTime: state.timeLeft }));
+          this.setState((state) => ({ bestTime: state.timeLeft }));
           storeData('bestTime', this.state.timeLeft);
         }
 
@@ -79,7 +79,7 @@ export default class Game extends Component<
           this.backgroundMusic.stopAsync();
           // Store best points
           if (this.state.points > this.state.bestPoints) {
-            this.setState(state => ({ bestPoints: state.points }));
+            this.setState((state) => ({ bestPoints: state.points }));
             storeData('highScore', this.state.points);
           }
           this.setState({ gameState: 'LOST' });
@@ -284,7 +284,7 @@ export default class Game extends Component<
                       source={require('../../assets/icons/mug.png')}
                       style={styles.pausedIcon}
                     />
-                    <Text style={styles.pausedText}>COVFEFE BREAK</Text>
+                    <Text style={styles.pausedText}>COFFEE BREAK</Text>
                   </Fragment>
                 ) : (
                   <Fragment>
